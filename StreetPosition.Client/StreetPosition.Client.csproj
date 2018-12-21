@@ -70,7 +70,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Overlays\StreetPositionOverlay.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -35,7 +35,7 @@
 
 	<script>
 		$(() => {
-			nfive.on('show-street-name', async (streetName) => {
+			nfive.on('set', (streetName) => {
 				 $("p").text(streetName);
 			})
 

@@ -4,9 +4,11 @@ namespace StreetPosition.Client.Overlays
 {
 	public class StreetPositionOverlay : Overlay
 	{
-		public StreetPositionOverlay(string streetName, OverlayManager manager) : base("StreetPositionOverlay.html", manager)
+		public StreetPositionOverlay(OverlayManager manager) : base("StreetPositionOverlay.html", manager) { }
+
+		public void Set(string streetName)
 		{
-			Attach("show-street-name", (_, callback) => Send(streetName));
+			Send("set", streetName);
 		}
 	}
 }
