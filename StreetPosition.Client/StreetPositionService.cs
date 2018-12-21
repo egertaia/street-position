@@ -17,9 +17,12 @@ namespace StreetPosition.Client
 	public class StreetPositionService : Service
 	{
 		private StreetPositionOverlay overlay;
+		private string lastValue;
 
 		public StreetPositionService(ILogger logger, ITickManager ticks, IEventManager events, IRpcHandler rpc, OverlayManager overlay, User user) : base(logger, ticks, events, rpc, overlay, user)
 		{
+			this.overlay = new StreetPositionOverlay(this.OverlayManager);
+
 			this.Ticks.Attach(OnTick);
 		}
 
@@ -34,7 +37,11 @@ namespace StreetPosition.Client
 			var areaName = GetAreaName(Game.Player.Character.Position);
 			if (!string.IsNullOrWhiteSpace(areaName)) streetName += $" & {areaName}";
 
-			this.overlay = new StreetPositionOverlay(streetName, this.OverlayManager);
+			if (this.lastValue == streetName) return;
+
+			this.lastValue = streetName;
+
+			this.overlay.Set(streetName);
 		}
 
 		private static string GetAreaName(Vector3 position)
