@@ -17,7 +17,8 @@ namespace StreetPosition.Client
 	public class StreetPositionService : Service
 	{
 		private StreetPositionOverlay overlay;
-		private string lastValue;
+		private string lastStreet;
+		private string lastArea;
 
 		public StreetPositionService(ILogger logger, ITickManager ticks, IEventManager events, IRpcHandler rpc, OverlayManager overlay, User user) : base(logger, ticks, events, rpc, overlay, user)
 		{
@@ -32,23 +33,19 @@ namespace StreetPosition.Client
 			Screen.Hud.HideComponentThisFrame(HudComponent.AreaName);
 			Screen.Hud.HideComponentThisFrame(HudComponent.StreetName);
 
+			// Save position
+			var position = Game.Player.Character.Position;
+
 			// Get new Street & Area name
-			var streetName = World.GetStreetName(Game.Player.Character.Position);
-			var areaName = GetAreaName(Game.Player.Character.Position);
-			if (!string.IsNullOrWhiteSpace(areaName)) streetName += $" & {areaName}";
+			var streetName = World.GetStreetName(position);
+			var areaName = World.GetZoneLocalizedName(position);
+		
+			if (this.lastStreet == streetName && this.lastArea == areaName) return;
+			this.lastStreet = streetName;
+			this.lastArea = areaName;
 
-			if (this.lastValue == streetName) return;
-
-			this.lastValue = streetName;
-
-			this.overlay.Set(streetName);
+			this.overlay.Set(streetName, areaName);
 		}
 
-		private static string GetAreaName(Vector3 position)
-		{
-			OutputArgument areaHash = new OutputArgument();
-			Function.Call(Hash.GET_STREET_NAME_AT_COORD, position.X, position.Y, position.Z, new OutputArgument(), areaHash);
-			return API.GetStreetNameFromHashKey(areaHash.GetResult<uint>());
-		}
 	}
 }
