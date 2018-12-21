@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+
+<html lang="en-us">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:700">
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+
+	<style type="text/css">
+		html, body {
+			width: 100vw;
+			height: 100vh;
+			margin: 0;
+			overflow: hidden;
+			font-size: 10vh;
+			font-family: 'PT Sans', sans-serif;
+			user-select: none;
+			outline: none;
+			background-color: transparent;
+			position: relative;
+		}
+
+		#bottom-right {
+			right: 10px;
+			bottom: 10px;
+		}
+
+		p {
+			color: #ffffff;
+		}
+
+	</style>
+
+	<script>
+		$(() => {
+			nfive.on('show-street-name', async (streetName) => {
+				 $("p").text(streetName);
+			})
+
+			nfive.show();
+		})
+	</script>
+</head>
+<body>
+	<main id="bottom-right">
+		<p id="text"></p>
+	</main>
+</body>
+</html>
