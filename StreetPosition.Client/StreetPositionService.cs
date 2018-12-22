@@ -50,14 +50,6 @@ namespace StreetPosition.Client
 			this.Ticks.Attach(OnTick);
 		}
 
-		//<div id ="heading">{heading}</div>
-		//<div id="street-container">
-		//	<div>
-		//		<span id = "street" >{street}</span><span id ="crossing">- {crossing}</span>
-		//	</div>
-		//	<div id ="area">{area}</div>
-		//</div>
-
 		private async Task OnTick()
 		{
 			// Hide GTA V steet & area name
@@ -90,7 +82,7 @@ namespace StreetPosition.Client
 			if (ShouldUpdateLocation(streetName, crossing, areaName, direction))
 			{
 				UpdateLastValues(streetName, crossing, areaName, direction);
-				this.overlay.Set(streetName, " - " + crossing, areaName, direction);
+				this.overlay.Set(streetName, crossing, areaName, direction);
 			}
 
 		}
