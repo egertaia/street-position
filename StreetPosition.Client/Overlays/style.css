@@ -12,24 +12,24 @@
 
 #main-container {
 	position: absolute;
-	bottom: 20.1vh;
-	left: 1.0vw;
+	bottom: 1vh;
+	left: 17.7vw;
 	text-align: left;
 	display: flex;
 }
 
 #left-section {
-	font-size: 48px;
+	font-size: 28px;
 	margin-right: 0.5vw;
 	color: #ffffff;
 }
 
 #street-container {
-	margin-top: 0.8vh;
+	margin-top: 0.6vh;
 }
 
 #top-row {
-	font-size: 24px;
+	font-size: 12px;
 	color: #fff;
 }
 
@@ -43,14 +43,11 @@
 
 #bottom-row {
 	position: absolute;
-	font-size: 16px;
-	bottom: 1vh;
+	font-size: 10px;
+	bottom: 0.5vh;
 	color: #fff;
 }
 
 #area {
 	color: #E6D081;
 }
-
-
-
