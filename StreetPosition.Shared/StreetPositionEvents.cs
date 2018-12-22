@@ -2,6 +2,6 @@
 {
 	public static class StreetPositionEvents
 	{
-		public static readonly string GetConfig = "streetposition:config";
+		public static readonly string GetConfig = "streetposition:configure";
 	}
 }

@@ -6,9 +6,9 @@ namespace StreetPosition.Client.Overlays
 	{
 		public StreetPositionOverlay(OverlayManager manager) : base("StreetPositionOverlay.html", manager) { }
 
-		public void Set(string streetName, string areaName)
+		public void Set(string streetName, string crossing, string areaName, string direction)
 		{
-			Send("set", new {streetName, areaName });
+			Send("set", new {streetName, crossing, areaName, direction });
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace StreetPosition.Server
 		public bool ShowStreet { get; set; } = true;
 		public bool ShowCrossing { get; set; } = true;
 		public bool ShowArea { get; set; } = true;
-		public bool ShowHeading { get; set; } = true;
-		public string Format { get; set; } = "{heading} {street} - {crossing}\n{area}";
+		public bool ShowDirection { get; set; } = false;
+		public string Format { get; set; } = "{heading} | {street} in {area}\n Crossing {area}";
 	}
 }

@@ -15,7 +15,7 @@ namespace StreetPosition.Shared
 
 		bool ShowArea { get; set; }
 
-		bool ShowHeading { get; set; }
+		bool ShowDirection { get; set; }
 
 		string Format { get; set; }
 	}

@@ -7,7 +7,7 @@
 		public bool ShowStreet { get; set; }
 		public bool ShowCrossing { get; set; }
 		public bool ShowArea { get; set; }
-		public bool ShowHeading { get; set; }
+		public bool ShowDirection { get; set; }
 		public string Format { get; set; }
 	}
 }

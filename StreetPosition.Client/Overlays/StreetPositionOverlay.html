@@ -1,33 +1,38 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en-us">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:700">
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-	<link rel="stylesheet" href="style.css"/>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:700">
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="style.css"/>
 
-	<script>
-		$(() => {
-			nfive.on('set', (obj) => {
-				$("#street").text(obj.streetName);
-				$("#area").text(obj.areaName);
+		<script>
+			$(() => {
+				nfive.on('set', (obj) => {
+					$("#street").text(obj.streetName);
+					$("#crossing").text(obj.crossing);
+					$("#area").text(obj.areaName);
+					$("#direction").text(obj.direction);
+				})
+				nfive.show();
 			})
-			nfive.show();
-		})
-	</script>
-</head>
-<body>
-	<div id="container">
-		<div id="heading"></div>
-		<div id="street-container">
-			<div>
-				<span id="street"></span><span id="crossing"></span>
+		</script>
+	</head>
+	<body>
+		<div id="main-container">
+			<div id="left-section">
+				<span id="direction"></span>
 			</div>
-			<div id="area"></div>
-
+			<div id="street-container">
+				<div id="top-row">
+					<span id="street"></span><span id="crossing"></span>
+				</div>
+				<div id="bottom-row">
+					<span id="area"></span>
+				</div>
+			</div>
 		</div>
-	</div>
-</body>
+	</body>
 </html>
