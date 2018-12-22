@@ -1,0 +1,44 @@
+﻿html, body {
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+	overflow: hidden;
+	user-select: none;
+	outline: none;
+	background-color: transparent;
+	font-family: 'PT Sans', sans-serif;
+	font-size: 24px;
+}
+
+#container {
+	position: absolute;
+	bottom: 20vh;
+	left: 1vw;
+	text-align: left;
+	display: flex;
+}
+
+#street-container {
+	margin-top: 0.8vh;
+}
+
+#street {
+	font-size: 24px;
+}
+
+#crossing {
+	font-size: 24px;
+}
+
+
+#area {
+	font-size: 16px;
+	position: absolute;
+	bottom: 1vh;
+}
+
+#heading {
+	font-size: 48px;
+	margin-right: 0.3vw;
+}
+
