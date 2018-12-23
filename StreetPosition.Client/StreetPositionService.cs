@@ -11,6 +11,7 @@ using CitizenFX.Core.Native;
 using System.Threading.Tasks;
 using StreetPosition.Client.Overlays;
 using StreetPosition.Shared;
+using StreetPosition.Client.Helpers;
 
 namespace StreetPosition.Client
 {
@@ -35,6 +36,7 @@ namespace StreetPosition.Client
 
 		public StreetPositionService(ILogger logger, ITickManager ticks, IEventManager events, IRpcHandler rpc, OverlayManager overlay, User user) : base(logger, ticks, events, rpc, overlay, user)
 		{
+			this.overlay = new StreetPositionOverlay(this.OverlayManager);
 		}
 
 		public override async Task Started()
@@ -47,10 +49,7 @@ namespace StreetPosition.Client
 			this.ShowDirection = config.ShowDirection;
 			this.ShowStreet = config.ShowStreet;
 			this.Format = config.Format;
-
-			this.overlay = new StreetPositionOverlay(this.OverlayManager);
-			this.overlay.Hide();
-
+			this.overlay.Show();
 			this.Ticks.Attach(OnTick);
 		}
 
@@ -62,23 +61,16 @@ namespace StreetPosition.Client
 
 			//Should overlay show?
 			HideOrShowOverlay();
-
-			// Save position
-			var position = Game.Player.Character.Position;
+			if (!this.overlay.Visible) return;
 
 			// Get new names
-			var streetName = World.GetStreetName(position);
-			var areaName = World.GetZoneLocalizedName(position);
-			var crossing = GetIntersectingStreetName(position);
+			var streetName = World.GetStreetName(Game.Player.Character.Position);
+			var areaName = World.GetZoneLocalizedName(Game.Player.Character.Position);
+			var crossing = GetIntersectingStreetName(Game.Player.Character.Position);
 			var direction = GetDirection();
 
 			// Should I update?
-			if (ShouldUpdateLocation(streetName, crossing, areaName, direction))
-			{
-				UpdateLastValues(streetName, crossing, areaName, direction);
-				this.overlay.Set(GetProperHtmlForPosition(streetName, crossing, areaName, direction));
-			}
-
+			ShouldUpdateLocation(streetName, crossing, areaName, direction);
 		}
 
 		private static string GetIntersectingStreetName(Vector3 position)
@@ -103,29 +95,68 @@ namespace StreetPosition.Client
 			return "N";
 		}
 
-		private static string GetProperHtmlForPosition(string streetName, string crossing, string areaName, string direction)
+		private string GetProperHtmlForPosition(string streetName, string crossing, string areaName, string direction)
 		{
-			//TODO: Make tis dependent on the format and different sections that are hidden.
-			return string.Format("<div id=\"left-section\"><span id=\"direction\">{0}</span></div><div id=\"right-section\"><div id=\"top-row\"><span id=\"street\">{1}</span> in <span id=\"area\">{2}</span</div><div id=\"bottom-row\">Crossing <span id=\"crossing\">{3}</span></div></div>",
-				direction, streetName, areaName, crossing);
+			if (!this.ShowArea) areaName = "";
+			if (!this.ShowStreet) streetName = "";
+			if (!this.ShowDirection) direction = "";
+			if (!this.ShowCrossing) crossing = "";
+			return this.Format.FormatWith(new { direction = direction, street = streetName, area = areaName, crossing = crossing });
 		}
 
-		private bool ShouldUpdateLocation(string streetName, string crossingName, string areaName, string direction)
+		private void ShouldUpdateLocation(string streetName, string crossingName, string areaName, string direction)
 		{
-			if (this.lastStreet != streetName) return true;
-			if (this.lastCrossing != crossingName) return true;
-			if (this.lastArea != areaName) return true;
-			if (this.lastDirection != direction) return true;
-			return false;
+			if (this.lastStreet != streetName || this.lastCrossing != crossingName || this.lastArea != areaName || this.lastDirection != direction) {
+				this.overlay.Set(GetProperHtmlForPosition(streetName, crossingName, areaName, direction));
+			}
+			UpdateLastValues(streetName, crossingName, areaName, direction);
 		}
 
 		private void HideOrShowOverlay()
 		{
 			bool isPlayerInVehicle = Game.Player.Character.IsInVehicle();
-			if (this.overlay.Visible && this.DisplayInVehicle && !isPlayerInVehicle) this.overlay.Hide();
-			if (this.overlay.Visible && this.DisplayOnFoot && !isPlayerInVehicle) this.overlay.Hide();
-			if (!this.overlay.Visible && this.DisplayInVehicle && isPlayerInVehicle) this.overlay.Show();
-			if (!this.overlay.Visible && this.DisplayOnFoot && !isPlayerInVehicle) this.overlay.Show();
+			if (this.overlay.Visible)
+			{
+				if(!this.DisplayInVehicle && !this.DisplayOnFoot)
+				{
+					this.overlay.Hide();
+					return;
+				}
+
+				if(isPlayerInVehicle && !this.DisplayInVehicle)
+				{
+					this.overlay.Hide();
+					return;
+				}
+
+				if(!isPlayerInVehicle && !this.DisplayOnFoot)
+				{
+					//TODO: Figure out why this is not fired;
+					this.overlay.Hide();
+				}
+				return;
+			}
+			if(!this.overlay.Visible)
+			{
+				if(this.DisplayInVehicle && this.DisplayOnFoot)
+				{
+					this.overlay.Show();
+					return;
+				}
+
+				if(isPlayerInVehicle && this.DisplayInVehicle)
+				{
+					this.overlay.Show();
+					return;
+				}
+
+				if(!isPlayerInVehicle && this.DisplayOnFoot)
+				{
+					this.overlay.Show();
+					return;
+				}
+				return;
+			}
 		}
 		
 		private void UpdateLastValues(string streetName, string crossing, string areaName, string direction)

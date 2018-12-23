@@ -11,6 +11,6 @@ namespace StreetPosition.Server
 		public bool ShowCrossing { get; set; } = true;
 		public bool ShowArea { get; set; } = true;
 		public bool ShowDirection { get; set; } = false;
-		public string Format { get; set; } = "{heading} | {street} in {area}\n Crossing {area}";
+		public string Format { get; set; } = "<div id=\"left-section\"><span id=\"direction\">{direction}</span></div><div id=\"right-section\"><div id=\"top-row\"><span id=\"street\">{street}</span> in <span id=\"area\">{area}</span</div><div id=\"bottom-row\">Crossing <span id=\"crossing\">{crossing}</span></div></div>";
 	}
 }
