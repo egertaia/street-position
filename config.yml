@@ -1,7 +1,0 @@
-display_on_foot: false
-display_in_vehicle: true
-show_street: true
-show_crossing: true
-show_area: true
-show_direction: false
-format: "{heading} | {street} - {crossing}\n{area}"

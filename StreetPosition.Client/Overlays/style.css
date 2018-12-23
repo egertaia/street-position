@@ -24,8 +24,9 @@
 	color: #ffffff;
 }
 
-#street-container {
-	margin-top: 0.6vh;
+#right-section {
+	margin-top: 0.65vh;
+	width: 50vw;
 }
 
 #top-row {

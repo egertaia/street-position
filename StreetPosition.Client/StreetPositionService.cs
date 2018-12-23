@@ -7,10 +7,10 @@ using NFive.SDK.Core.Diagnostics;
 using NFive.SDK.Core.Models.Player;
 using CitizenFX.Core;
 using CitizenFX.Core.UI;
+using CitizenFX.Core.Native;
 using System.Threading.Tasks;
 using StreetPosition.Client.Overlays;
 using StreetPosition.Shared;
-using CitizenFX.Core.Native;
 
 namespace StreetPosition.Client
 {
@@ -25,6 +25,8 @@ namespace StreetPosition.Client
 		public bool ShowStreet;
 		public bool ShowCrossing;
 		public bool ShowArea;
+
+		public string Format;
 
 		private string lastStreet;
 		private string lastArea;
@@ -44,8 +46,10 @@ namespace StreetPosition.Client
 			this.ShowCrossing = config.ShowCrossing;
 			this.ShowDirection = config.ShowDirection;
 			this.ShowStreet = config.ShowStreet;
+			this.Format = config.Format;
 
 			this.overlay = new StreetPositionOverlay(this.OverlayManager);
+			this.overlay.Hide();
 
 			this.Ticks.Attach(OnTick);
 		}
@@ -56,33 +60,24 @@ namespace StreetPosition.Client
 			Screen.Hud.HideComponentThisFrame(HudComponent.AreaName);
 			Screen.Hud.HideComponentThisFrame(HudComponent.StreetName);
 
-			// Save position and player state
-			var position = Game.Player.Character.Position;
-			var isInVehicle = Game.Player.Character.IsInVehicle();
-
 			//Should overlay show?
-			if (this.DisplayInVehicle == false && isInVehicle) {
-				this.overlay.Hide();
-				return;
-			}
+			HideOrShowOverlay();
+			if (!this.overlay.Visible) return;
 
-			if (this.DisplayOnFoot == false && !isInVehicle)
-			{
-				this.overlay.Hide();
-				return;
-			}
+			// Save position
+			var position = Game.Player.Character.Position;
 
 			// Get new names
 			var streetName = World.GetStreetName(position);
 			var areaName = World.GetZoneLocalizedName(position);
 			var crossing = GetIntersectingStreetName(position);
-			var direction = "N";
+			var direction = GetDirection(Game.Player.Character);
 
 			// Should I update?
 			if (ShouldUpdateLocation(streetName, crossing, areaName, direction))
 			{
 				UpdateLastValues(streetName, crossing, areaName, direction);
-				this.overlay.Set(streetName, crossing, areaName, direction);
+				this.overlay.Set(GetProperHtmlForPosition(streetName, crossing, areaName, direction));
 			}
 
 		}
@@ -92,6 +87,19 @@ namespace StreetPosition.Client
 			OutputArgument areaHash = new OutputArgument();
 			Function.Call(Hash.GET_STREET_NAME_AT_COORD, position.X, position.Y, position.Z, new OutputArgument(), areaHash);
 			return API.GetStreetNameFromHashKey(areaHash.GetResult<uint>());
+		}
+
+		private static string GetDirection(Ped ped)
+		{
+			//TODO return proper direction
+			return "N";
+		}
+
+		private static string GetProperHtmlForPosition(string streetName, string crossing, string areaName, string direction)
+		{
+			//TODO: Make tis dependent on the format and different sections that are hidden.
+			return string.Format("<div id=\"left-section\"><span id=\"direction\">{0}</span></div><div id=\"right-section\"><div id=\"top-row\"><span id=\"street\">{1}</span> in <span id=\"area\">{2}</span</div><div id=\"bottom-row\">Crossing <span id=\"crossing\">{3}</span></div></div>",
+				direction, streetName, areaName, crossing);
 		}
 
 		private bool ShouldUpdateLocation(string streetName, string crossingName, string areaName, string direction)
@@ -104,6 +112,15 @@ namespace StreetPosition.Client
 			return false;
 		}
 
+		private void HideOrShowOverlay()
+		{
+			bool isPlayerInVehicle = Game.Player.Character.IsInVehicle();
+			if (this.overlay.Visible && this.DisplayInVehicle && !isPlayerInVehicle) this.overlay.Hide();
+			if (this.overlay.Visible && this.DisplayOnFoot && !isPlayerInVehicle) this.overlay.Hide();
+			if (!this.overlay.Visible && this.DisplayInVehicle && isPlayerInVehicle) this.overlay.Show();
+			if (!this.overlay.Visible && this.DisplayOnFoot && !isPlayerInVehicle) this.overlay.Show();
+		}
+		
 		private void UpdateLastValues(string streetName, string crossing, string areaName, string direction)
 		{
 			this.lastStreet = streetName;
@@ -111,6 +128,5 @@ namespace StreetPosition.Client
 			this.lastArea = areaName;
 			this.lastDirection = direction;
 		}
-
 	}
 }

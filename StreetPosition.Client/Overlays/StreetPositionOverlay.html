@@ -11,28 +11,14 @@
 		<script>
 			$(() => {
 				nfive.on('set', (obj) => {
-					$("#street").text(obj.streetName);
-					$("#crossing").text(obj.crossing);
-					$("#area").text(obj.areaName);
-					$("#direction").text(obj.direction);
+					$("#main-container").empty();
+					$("#main-container").append(obj);
 				})
-				nfive.show();
 			})
 		</script>
 	</head>
 	<body>
 		<div id="main-container">
-			<div id="left-section">
-				<span id="direction"></span>
-			</div>
-			<div id="street-container">
-				<div id="top-row">
-					<span id="street"></span> <span id="area"></span>
-				</div>
-				<div id="bottom-row">
-					<span id="crossing"></span>
-				</div>
-			</div>
 		</div>
 	</body>
 </html>
