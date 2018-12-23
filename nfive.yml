@@ -1,10 +1,18 @@
 name: egertaia/street-position
-version: 0.1.0
+version: 1.0.0
 description: This will show your position similar how GTA V does it natively.
 author: egertaia
 license: LGPL
+server:
+  main:
+    - StreetPosition.Server
+  include:
+    - StreetPosition.Shared
 client:
   main:
     - StreetPosition.Client
   files:
     - Overlays/StreetPositionOverlay.html
+    - Overlays/style.css
+  include:
+    - StreetPosition.Shared

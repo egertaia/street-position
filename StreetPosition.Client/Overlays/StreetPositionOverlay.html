@@ -1,57 +1,24 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en-us">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:700">
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:700">
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="style.css"/>
 
-
-	<style type="text/css">
-		html, body {
-			width: 100vw;
-			height: 100vh;
-			margin: 0;
-			overflow: hidden;
-			user-select: none;
-			outline: none;
-			background-color: transparent;
-			font-family: 'PT Sans', sans-serif;
-			color: #ffffff;
-		}
-
-		#bottom-right {
-			position: absolute;
-			bottom: 1vh;
-			right: 1vw;
-			text-align: right;
-		}
-
-		#street {
-			font-size: 24px;
-		}
-
-		#area {
-			font-size: 16px;
-		}
-
-	</style>
-
-	<script>
-		$(() => {
-			nfive.on('set', (obj) => {
-				$("#street").text(obj.streetName);
-				$("#area").text(obj.areaName);
+		<script>
+			$(() => {
+				nfive.on('set', (obj) => {
+					$("#main-container").empty();
+					$("#main-container").append(obj);
+				})
 			})
-			nfive.show();
-		})
-	</script>
-</head>
-<body>
-	<div id="bottom-right">
-		<div id="street"></div>
-		<div id="area"></div>
-	</div>
-</body>
+		</script>
+	</head>
+	<body>
+		<div id="main-container">
+		</div>
+	</body>
 </html>
