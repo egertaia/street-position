@@ -1,6 +1,9 @@
 # street-position
 This will show your position similar how GTA V does it natively.
 
-# future plans
-Make everything configurable, from text color to size to position on screen.
-Make intersecting street showable or not.
+# info
+Configurable by format string.
+Display On Foot / Display In vehicle show/hide depending on ped.
+
+Show is currently there just for the sake of taking it into consideration when updating the location.
+Default configuration image can be seen under release.
