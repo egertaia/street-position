@@ -62,7 +62,6 @@ namespace StreetPosition.Client
 
 			//Should overlay show?
 			HideOrShowOverlay();
-			if (!this.overlay.Visible) return;
 
 			// Save position
 			var position = Game.Player.Character.Position;
@@ -71,7 +70,7 @@ namespace StreetPosition.Client
 			var streetName = World.GetStreetName(position);
 			var areaName = World.GetZoneLocalizedName(position);
 			var crossing = GetIntersectingStreetName(position);
-			var direction = GetDirection(Game.Player.Character);
+			var direction = GetDirection();
 
 			// Should I update?
 			if (ShouldUpdateLocation(streetName, crossing, areaName, direction))
@@ -89,9 +88,18 @@ namespace StreetPosition.Client
 			return API.GetStreetNameFromHashKey(areaHash.GetResult<uint>());
 		}
 
-		private static string GetDirection(Ped ped)
+		private static string GetDirection()
 		{
-			//TODO return proper direction
+			var deg = 360 - Game.PlayerPed.Heading;
+			if (deg >= 0 && deg < 30) return "N";
+			if (deg >= 30 && deg < 60) return "NE";
+			if (deg >= 60 && deg < 120) return "E";
+			if (deg >= 120 && deg < 150) return "SE";
+			if (deg >= 150 && deg < 210) return "S";
+			if (deg >= 210 && deg < 240) return "SW";
+			if (deg >= 240 && deg < 300) return "W";
+			if (deg >= 300 && deg < 330) return "NW";
+			if (deg >= 330) return "N";
 			return "N";
 		}
 
@@ -104,11 +112,10 @@ namespace StreetPosition.Client
 
 		private bool ShouldUpdateLocation(string streetName, string crossingName, string areaName, string direction)
 		{
-			if (this.ShowStreet && this.lastStreet != streetName) return true;
-			if (this.ShowCrossing && this.lastCrossing != crossingName) return true;
-			if (this.ShowArea && this.lastArea != areaName) return true;
-			if (this.ShowDirection && this.lastDirection != direction) return true;
-
+			if (this.lastStreet != streetName) return true;
+			if (this.lastCrossing != crossingName) return true;
+			if (this.lastArea != areaName) return true;
+			if (this.lastDirection != direction) return true;
 			return false;
 		}
 
