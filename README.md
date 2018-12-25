@@ -7,6 +7,7 @@
 This is a plugin that works with [NFive](https://github.com/NFive/NFive) which is complete plugin framework for GTAV [FiveM](https://fivem.net/).
 The whole server is built and managed entirely in C#.
 This project aims to replace GTAV's native street and area showing with a fully configurable one, that by default is positioned next to the map.
+
 ![image](https://user-images.githubusercontent.com/9960794/50387612-3c57d500-0709-11e9-865d-31d6ffe76f9a.png)
 
 ### Usage
