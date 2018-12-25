@@ -83,15 +83,15 @@ namespace StreetPosition.Client
 		private static string GetDirection()
 		{
 			var deg = 360 - Game.PlayerPed.Heading;
-			if (deg >= 0 && deg < 30) return "N";
-			if (deg >= 30 && deg < 60) return "NE";
-			if (deg >= 60 && deg < 120) return "E";
-			if (deg >= 120 && deg < 150) return "SE";
-			if (deg >= 150 && deg < 210) return "S";
-			if (deg >= 210 && deg < 240) return "SW";
-			if (deg >= 240 && deg < 300) return "W";
-			if (deg >= 300 && deg < 330) return "NW";
-			if (deg >= 330) return "N";
+			if (deg >= 0 && deg < 22.5) return "N";
+			if (deg >= 22.5 && deg < 67.5) return "NE";
+			if (deg >= 67.5 && deg < 112.5) return "E";
+			if (deg >= 112.5 && deg < 157.5) return "SE";
+			if (deg >= 157.5 && deg < 202.5) return "S";
+			if (deg >= 202.5 && deg < 247.5) return "SW";
+			if (deg >= 247.5 && deg < 292.5) return "W";
+			if (deg >= 292.5 && deg < 337.5) return "NW";
+			if (deg >= 337.5) return "N";
 			return "N";
 		}
 
