@@ -1,7 +1,7 @@
 # Street positions
 [![License](https://img.shields.io/github/license/NFive/NFive.svg)](LICENSE)
 [![Build Status](https://img.shields.io/appveyor/ci/NFive/nfive.svg)](https://ci.appveyor.com/project/egertaia/street-position)
-[![Release Version](https://img.shields.io/github/release/NFive/NFive/all.svg)](https://github.com/egertaia/street-position/releases)
+[![Release Version](https://img.shields.io/github/release/NFive/NFive/all.svg)](https://github.com/egertaia/street-position/releases/tag/1.1.0)
 
 ## What is this?
 This is a plugin that works with [NFive](https://github.com/NFive/NFive) which is complete plugin framework for GTAV [FiveM](https://fivem.net/).
