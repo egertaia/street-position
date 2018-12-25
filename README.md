@@ -16,21 +16,34 @@ This project aims to replace GTAV's native street and area showing with a fully 
 
 3. Install this plugin by calling `nfpm install egertaia/street-position`
 
-4. Configure this if you are not happy with default configuration. This can be done by config file `path-to-server\resources\nfive\config\egertaia\street-position` and style/html file `path-to-server\resources\nfive\plugins\egertaia\street-position\Overlays`
+4. Configure this if you are not happy with default configuration. This can be done by
+   * config file `path-to-server\resources\nfive\config\egertaia\street-position`
+   
+   * style/html file `path-to-server\resources\nfive\plugins\egertaia\street-position\Overlays`
 
 #### Configuration
 * `display_on_foot` = Should position be shown on foot?
+
 * `display_in_vehicle` = Should position be shown while in vehicle?
+
 * `show_street` = Should street name change be taken into update consideration and should this be parsed.
+
 * `show_crossing` = Should crossing stret name be taken into update consideration and should this be parsed.
 ** NB! When changing this to false, you have to change `format` section otherwise there is going to be just the word "Crossing" in the bottom row.
+
 * `show_area` = Should area name be taken into update consideration and should this be parsed.
+
 * `show_direction` = Should direction name be taken into update consideration and should this be parsed.
-** NB! This might be the only one that setting `false` to works out of the box. Other variations are untested.
+  * NB! This might be the only one that setting `false` to works out of the box. Other variations are untested.
+  
 * `format` = this is the html string that is going to be sent from server to the GTAV, where NUI renders this.
-** `left-section` - the container for direction
-** `right-section` - the container for right section.
-*** `top-row` - the row that is the 1st line of text.
-*** `bottom-row` - the row that is the 2nd line of text.
-
-
+  * `left-section` - the container for direction
+    * `{{direction}}` - this is where the Direction text is parsed to. 
+    
+  * `right-section` - the container for right section.
+    * `top-row` - the row that is the 1st line of text.
+      * `{{street}}` - this is where the street text is parsed to.
+      * `{{area}}` - this is where the area text is parsed to. 
+ 
+    * `bottom-row` - the row that is the 2nd line of text.
+      * `{{crossing}} - this is where the crossing street name text is parsed to` 
