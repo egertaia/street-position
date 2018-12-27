@@ -11,8 +11,10 @@ namespace StreetPosition.Shared
 
 		public DisplayConfiguration Display { get; set; } = new DisplayConfiguration();
 
-		public string ActivationEvent { get; set; } = string.Empty;
+		public uint UpdateInterval { get; set; } = 500;
 
+		public string ActivationEvent { get; set; } = string.Empty;
+		
 		public string Template { get; set; } = @"<div id=""left-section"">
 	<span id=""direction"">{ Direction }</span>
 </div>

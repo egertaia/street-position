@@ -26,6 +26,9 @@ display:
   area: true      # The name of the map area
   direction: true # The compass direction you are facing
 
+# How often, in milliseconds, to update the location
+update_interval: 500
+
 # (Optional) The RPC event which when fired should start this plugin
 # If set, this plugin won't display anything until after this event has fired once
 # This can be used to enable this plugin once you are loaded into the game

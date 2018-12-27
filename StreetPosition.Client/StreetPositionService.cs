@@ -41,17 +41,12 @@ namespace StreetPosition.Client
 
 			if (!string.IsNullOrWhiteSpace(this.config.ActivationEvent))
 			{
-				this.Logger.Debug($"Attaching to event: {this.config.ActivationEvent}");
-				this.Rpc.Event(this.config.ActivationEvent.Trim()).On(e =>
-				{
-					this.Logger.Debug($"Attaching Tick");
-					this.Ticks.Attach(OnTick);
-				});
+				// Attach tick handler once activation event has fired
+				this.Rpc.Event(this.config.ActivationEvent.Trim()).On(e => this.Ticks.Attach(OnTick));
 			}
 			else
 			{
-				this.Logger.Debug($"Attaching Tick");
-				// Run every frame
+				// Attach tick handler immediately
 				this.Ticks.Attach(OnTick);
 			}
 		}
@@ -62,8 +57,8 @@ namespace StreetPosition.Client
 			Screen.Hud.HideComponentThisFrame(HudComponent.AreaName);
 			Screen.Hud.HideComponentThisFrame(HudComponent.StreetName);
 
-			// Update twice a second
-			if (Game.GameTime < this.lastUpdate + 500) return;
+			// Update at set interval
+			if (Game.GameTime < this.lastUpdate + this.config.UpdateInterval) return;
 
 			this.lastUpdate = Game.GameTime;
 
