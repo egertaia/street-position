@@ -33,7 +33,7 @@ update_interval: 500
 # If set, this plugin won't display anything until after this event has fired once
 # This can be used to enable this plugin once you are loaded into the game
 # Defaults to disabled
-activation_event: igicore:character:create
+activation_event: something:game:started
 
 # HTML template with placeholder values, this can be edited to fully customize the HUD
 # Edit "server\resources\nfive\plugins\egertaia\street-position\Overlays\style.css" to edit the styling
