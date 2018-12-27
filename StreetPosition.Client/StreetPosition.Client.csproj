@@ -59,7 +59,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\StringFormatter.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Overlays\StreetPositionOverlay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreetPositionService.cs" />

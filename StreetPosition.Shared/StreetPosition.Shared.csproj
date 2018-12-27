@@ -54,8 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
-    <Compile Include="IConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreetPosition.cs" />
     <Compile Include="StreetPositionEvents.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,6 @@
 {
 	public static class StreetPositionEvents
 	{
-		public static readonly string GetConfig = "streetposition:configure";
+		public const string GetConfig = "egertaia:street-position:configure";
 	}
 }
