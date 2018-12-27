@@ -2,9 +2,9 @@
 using System.Reflection;
 using System.Text;
 
-namespace StreetPosition.Client.Helpers
+namespace StreetPosition.Client.Extensions
 {
-	public static class StringFormatter
+	public static class StringExtensions
 	{
 		public static string FormatWith(this string format, object source)
 		{
@@ -24,7 +24,7 @@ namespace StreetPosition.Client.Helpers
 						term = true;
 						break;
 					case '}':
-						pi = currentPropValue.GetType().GetProperty(currentTerm.ToString());
+						pi = currentPropValue.GetType().GetProperty(currentTerm.ToString().Trim());
 						result.Append((string)pi.PropertyType.GetMethod("ToString", new Type[] { }).Invoke(pi.GetValue(currentPropValue, null), null));
 						currentTerm.Clear();
 						term = false;
@@ -35,7 +35,7 @@ namespace StreetPosition.Client.Helpers
 						{
 							if (formatChars[i] == '.')
 							{
-								pi = currentPropValue.GetType().GetProperty(currentTerm.ToString());
+								pi = currentPropValue.GetType().GetProperty(currentTerm.ToString().Trim());
 								currentPropValue = pi.GetValue(source, null);
 								currentTerm.Clear();
 							}

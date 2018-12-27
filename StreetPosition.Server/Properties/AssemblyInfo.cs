@@ -2,11 +2,10 @@
 using System.Runtime.InteropServices;
 using NFive.SDK.Server;
 
-[assembly: ServerPlugin(1)]
+[assembly: ServerPlugin(SDK.Version)]
 
-
-[assembly: AssemblyTitle("street-position")]
-[assembly: AssemblyDescription("This will show your position similar how GTA V does it natively.")]
+[assembly: AssemblyTitle("Street Position")]
+[assembly: AssemblyDescription("Customizable HUD element to display current street location, area and direction.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("egertaia")]
 [assembly: AssemblyProduct("StreetPosition.Server")]

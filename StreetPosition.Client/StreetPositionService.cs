@@ -1,3 +1,7 @@
+﻿using System.Threading.Tasks;
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+using CitizenFX.Core.UI;
 using JetBrains.Annotations;
 using NFive.SDK.Client.Events;
 using NFive.SDK.Client.Interface;
@@ -5,85 +9,151 @@ using NFive.SDK.Client.Rpc;
 using NFive.SDK.Client.Services;
 using NFive.SDK.Core.Diagnostics;
 using NFive.SDK.Core.Models.Player;
-using CitizenFX.Core;
-using CitizenFX.Core.UI;
-using CitizenFX.Core.Native;
-using System.Threading.Tasks;
+using StreetPosition.Client.Extensions;
 using StreetPosition.Client.Overlays;
 using StreetPosition.Shared;
-using StreetPosition.Client.Helpers;
 
 namespace StreetPosition.Client
 {
+	/// <inheritdoc />
 	[PublicAPI]
 	public class StreetPositionService : Service
 	{
+		private Configuration config;
 		private StreetPositionOverlay overlay;
+		private int lastUpdate;
+		private Shared.StreetPosition last;
 
-		public bool DisplayInVehicle;
-		public bool DisplayOnFoot;
-		public bool ShowDirection;
-		public bool ShowStreet;
-		public bool ShowCrossing;
-		public bool ShowArea;
+		/// <inheritdoc />
+		public StreetPositionService(ILogger logger, ITickManager ticks, IEventManager events, IRpcHandler rpc, OverlayManager overlay, User user) : base(logger, ticks, events, rpc, overlay, user) { }
 
-		public string Format;
-
-		private string lastStreet;
-		private string lastArea;
-		private string lastCrossing;
-		private string lastDirection;
-
-		public StreetPositionService(ILogger logger, ITickManager ticks, IEventManager events, IRpcHandler rpc, OverlayManager overlay, User user) : base(logger, ticks, events, rpc, overlay, user)
-		{
-			this.overlay = new StreetPositionOverlay(this.OverlayManager);
-		}
-
+		/// <inheritdoc />
 		public override async Task Started()
 		{
-			var config = await this.Rpc.Event(StreetPositionEvents.GetConfig).Request<Configuration>();
-			this.DisplayInVehicle = config.DisplayInVehicle;
-			this.DisplayOnFoot = config.DisplayOnFoot;
-			this.ShowArea = config.ShowArea;
-			this.ShowCrossing = config.ShowCrossing;
-			this.ShowDirection = config.ShowDirection;
-			this.ShowStreet = config.ShowStreet;
-			this.Format = config.Format;
-			this.overlay.Show();
-			this.Ticks.Attach(OnTick);
+			// Request server config
+			this.config = await this.Rpc.Event(StreetPositionEvents.GetConfig).Request<Configuration>();
+
+			// Update local config on server config change
+			this.Rpc.Event(StreetPositionEvents.GetConfig).On<Configuration>((e, c) => this.config = c);
+
+			// Create overlay
+			this.overlay = new StreetPositionOverlay(this.OverlayManager);
+
+			if (!string.IsNullOrWhiteSpace(this.config.ActivationEvent))
+			{
+				// Attach tick handler once activation event has fired
+				this.Rpc.Event(this.config.ActivationEvent.Trim()).On(e => this.Ticks.Attach(OnTick));
+			}
+			else
+			{
+				// Attach tick handler immediately
+				this.Ticks.Attach(OnTick);
+			}
 		}
 
 		private async Task OnTick()
 		{
-			// Hide GTA V steet & area name
+			// Hide stock street & area name
 			Screen.Hud.HideComponentThisFrame(HudComponent.AreaName);
 			Screen.Hud.HideComponentThisFrame(HudComponent.StreetName);
 
-			//Should overlay show?
-			HideOrShowOverlay();
+			// Update at set interval
+			if (Game.GameTime < this.lastUpdate + this.config.UpdateInterval) return;
+
+			this.lastUpdate = Game.GameTime;
+
+			if (Game.Player == null) return;
+
+			// Cache character
+			var character = Game.Player.Character;
+			if (character == null) return;
+
+			// Should display overlay
+			DisplayOverlay(character.IsInVehicle());
+
 			if (!this.overlay.Visible) return;
 
-			// Get new names
-			var streetName = World.GetStreetName(Game.Player.Character.Position);
-			var areaName = World.GetZoneLocalizedName(Game.Player.Character.Position);
-			var crossing = GetIntersectingStreetName(Game.Player.Character.Position);
-			var direction = GetDirection();
+			// Cache position
+			var position = character.Position;
 
-			// Should I update?
-			ShouldUpdateLocation(streetName, crossing, areaName, direction);
+			// Get new values
+			var current = new Shared.StreetPosition
+			{
+				Street = this.config.Display.Street ? World.GetStreetName(position) : string.Empty,
+				Crossing = this.config.Display.Crossing ? GetIntersectingStreetName(position) : string.Empty,
+				Area = this.config.Display.Area ? World.GetZoneLocalizedName(position) : string.Empty,
+				Direction = this.config.Display.Direction ? GetDirection(character.Heading) : string.Empty
+			};
+
+			// Check for changed values
+			if (this.last == null || !current.Equals(this.last))
+			{
+				this.last = current;
+
+				// Update overlay
+				this.overlay.Set(this.config.Template.FormatWith(new
+				{
+					current.Street,
+					current.Crossing,
+					current.Area,
+					current.Direction
+				}));
+			}
+		}
+
+		private void DisplayOverlay(bool inVehicle)
+		{
+			if (this.overlay.Visible)
+			{
+				if (!this.config.When.InVehicle && !this.config.When.OnFoot)
+				{
+					this.overlay.Hide();
+					return;
+				}
+
+				if (inVehicle && !this.config.When.InVehicle)
+				{
+					this.overlay.Hide();
+					return;
+				}
+
+				if (!inVehicle && !this.config.When.OnFoot)
+				{
+					this.overlay.Hide();
+				}
+
+				return;
+			}
+
+			if (this.config.When.InVehicle && this.config.When.OnFoot)
+			{
+				this.overlay.Show();
+				return;
+			}
+
+			if (inVehicle && this.config.When.InVehicle)
+			{
+				this.overlay.Show();
+				return;
+			}
+
+			if (!inVehicle && this.config.When.OnFoot)
+			{
+				this.overlay.Show();
+			}
 		}
 
 		private static string GetIntersectingStreetName(Vector3 position)
 		{
-			OutputArgument areaHash = new OutputArgument();
+			var areaHash = new OutputArgument();
 			Function.Call(Hash.GET_STREET_NAME_AT_COORD, position.X, position.Y, position.Z, new OutputArgument(), areaHash);
 			return API.GetStreetNameFromHashKey(areaHash.GetResult<uint>());
 		}
 
-		private static string GetDirection()
+		private static string GetDirection(float heading)
 		{
-			var deg = 360 - Game.PlayerPed.Heading;
-			if (deg >= 0 && deg < 22.5) return "N";
+			var deg = 360 - heading;
+
 			if (deg >= 22.5 && deg < 67.5) return "NE";
 			if (deg >= 67.5 && deg < 112.5) return "E";
 			if (deg >= 112.5 && deg < 157.5) return "SE";
@@ -91,80 +161,7 @@ namespace StreetPosition.Client
 			if (deg >= 202.5 && deg < 247.5) return "SW";
 			if (deg >= 247.5 && deg < 292.5) return "W";
 			if (deg >= 292.5 && deg < 337.5) return "NW";
-			if (deg >= 337.5) return "N";
 			return "N";
-		}
-
-		private string GetProperHtmlForPosition(string streetName, string crossing, string areaName, string direction)
-		{
-			if (!this.ShowArea) areaName = "";
-			if (!this.ShowStreet) streetName = "";
-			if (!this.ShowDirection) direction = "";
-			if (!this.ShowCrossing) crossing = "";
-			return this.Format.FormatWith(new { direction = direction, street = streetName, area = areaName, crossing = crossing });
-		}
-
-		private void ShouldUpdateLocation(string streetName, string crossingName, string areaName, string direction)
-		{
-			if (this.lastStreet != streetName || this.lastCrossing != crossingName || this.lastArea != areaName || this.lastDirection != direction) {
-				this.overlay.Set(GetProperHtmlForPosition(streetName, crossingName, areaName, direction));
-			}
-			UpdateLastValues(streetName, crossingName, areaName, direction);
-		}
-
-		private void HideOrShowOverlay()
-		{
-			bool isPlayerInVehicle = Game.Player.Character.IsInVehicle();
-			if (this.overlay.Visible)
-			{
-				if(!this.DisplayInVehicle && !this.DisplayOnFoot)
-				{
-					this.overlay.Hide();
-					return;
-				}
-
-				if(isPlayerInVehicle && !this.DisplayInVehicle)
-				{
-					this.overlay.Hide();
-					return;
-				}
-
-				if(!isPlayerInVehicle && !this.DisplayOnFoot)
-				{
-					//TODO: Figure out why this is not fired;
-					this.overlay.Hide();
-				}
-				return;
-			}
-			if(!this.overlay.Visible)
-			{
-				if(this.DisplayInVehicle && this.DisplayOnFoot)
-				{
-					this.overlay.Show();
-					return;
-				}
-
-				if(isPlayerInVehicle && this.DisplayInVehicle)
-				{
-					this.overlay.Show();
-					return;
-				}
-
-				if(!isPlayerInVehicle && this.DisplayOnFoot)
-				{
-					this.overlay.Show();
-					return;
-				}
-				return;
-			}
-		}
-		
-		private void UpdateLastValues(string streetName, string crossing, string areaName, string direction)
-		{
-			this.lastStreet = streetName;
-			this.lastCrossing = crossing;
-			this.lastArea = areaName;
-			this.lastDirection = direction;
 		}
 	}
 }

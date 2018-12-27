@@ -1,6 +1,6 @@
 name: egertaia/street-position
-version: 1.1.0
-description: This will show your position similar how GTA V does it natively.
+version: 1.2.0
+description: Customizable HUD element to display current street location, area and direction.
 author: egertaia
 license: LGPL
 server:

@@ -10,15 +10,15 @@
 
 		<script>
 			$(() => {
-				nfive.on('set', (obj) => {
-					$("#main-container").empty();
-					$("#main-container").append(obj);
+				nfive.on('set', (value) => {
+					$('main').html(value)
 				})
+
+				nfive.show()
 			})
 		</script>
 	</head>
 	<body>
-		<div id="main-container">
-		</div>
+		<main></main>
 	</body>
 </html>
