@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using CitizenFX.Core.UI;
@@ -43,16 +44,16 @@ namespace StreetPosition.Client
 			if (!string.IsNullOrWhiteSpace(this.config.ActivationEvent))
 			{
 				// Attach tick handler once activation event has fired
-				this.Rpc.Event(this.config.ActivationEvent.Trim()).On(e => this.Ticks.Attach(OnTick));
+				this.Rpc.Event(this.config.ActivationEvent.Trim()).On(e => this.Ticks.Attach(new Action(OnTick)));
 			}
 			else
 			{
 				// Attach tick handler immediately
-				this.Ticks.Attach(OnTick);
+				this.Ticks.Attach(new Action(OnTick));
 			}
 		}
 
-		private async Task OnTick()
+		private void OnTick()
 		{
 			// Hide stock street & area name
 			Screen.Hud.HideComponentThisFrame(HudComponent.AreaName);
@@ -87,19 +88,18 @@ namespace StreetPosition.Client
 			};
 
 			// Check for changed values
-			if (this.last == null || !current.Equals(this.last))
-			{
-				this.last = current;
+			if (this.last != null && current.Equals(this.last)) return;
 
-				// Update overlay
-				this.overlay.Set(this.config.Template.FormatWith(new
-				{
-					current.Street,
-					current.Crossing,
-					current.Area,
-					current.Direction
-				}));
-			}
+			this.last = current;
+
+			// Update overlay
+			this.overlay.Set(this.config.Template.FormatWith(new
+			{
+				current.Street,
+				current.Crossing,
+				current.Area,
+				current.Direction
+			}));
 		}
 
 		private void DisplayOverlay(bool inVehicle)
